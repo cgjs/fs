@@ -1,5 +1,24 @@
 const MODULE = require('../index');
 
+function checkExistsSync() {
+  const existingFiles = ['index.js', 'test', 'test/index.js'];
+  const nonExistingFiles = ['asdasd', '/asdasd', ''];
+
+  for (const file of existingFiles) {
+    const result = MODULE.existsSync(file);
+    if (result !== true) {
+      throw new Error(`${file} exists but existsSync returned ${result}`);
+    }
+  }
+
+  for (const file of nonExistingFiles) {
+    const result = MODULE.existsSync(file);
+    if (result !== false) {
+      throw new Error(`${file} doesn't exists but existsSync returned ${result}`);
+    }
+  }
+}
+
 function checkReaddirSync() {
   const expectedFilesCount = 1;
   const expectedFileName = 'file.txt';
@@ -35,5 +54,6 @@ if (!Object.keys(MODULE).length) {
   throw new Error('MODULE was not exported');
 }
 
+checkExistsSync();
 checkReaddirSync();
 checkReadFileSync();

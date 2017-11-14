@@ -18,6 +18,16 @@ function _getEncodingFromOptions(options, defaultEncoding = 'utf8') {
   return defaultEncoding;
 }
 
+function existsSync(path) {
+  // TODO: accept buffer and URL too
+  if (typeof path !== 'string' || path === '') {
+    return false;
+  }
+
+  const file = Gio.File.new_for_path(path);
+  return file.query_exists(null);
+}
+
 function readdirSync(path, options = 'utf8') {
   const encoding = _getEncodingFromOptions(options);
   const dir = Gio.File.new_for_path(path);
@@ -59,6 +69,7 @@ function readFileSync(path, options = {encoding: null, flag: 'r'}) {
 }
 
 module.exports = {
+  existsSync,
   readdirSync,
   readFileSync
 };
