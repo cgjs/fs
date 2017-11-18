@@ -1,9 +1,9 @@
-const Gio = imports.gi.Gio;
+const { Gio } = imports.gi;
 
-const Buffer = require('buffer').Buffer;
+const { Buffer } = require('buffer');
 
-function _getEncodingFromOptions(options, defaultEncoding = 'utf8') {
-  if (typeof options === null) {
+function getEncodingFromOptions(options, defaultEncoding = 'utf8') {
+  if (options === null) {
     return defaultEncoding;
   }
 
@@ -29,13 +29,15 @@ function existsSync(path) {
 }
 
 function readdirSync(path, options = 'utf8') {
-  const encoding = _getEncodingFromOptions(options);
+  const encoding = getEncodingFromOptions(options);
   const dir = Gio.File.new_for_path(path);
   const list = [];
 
   const enumerator = dir.enumerate_children('standard::*', 0, null);
-  while ((info = enumerator.next_file(null))) {
-    let child = enumerator.get_child(info);
+  let info = enumerator.next_file(null);
+
+  while (info) {
+    const child = enumerator.get_child(info);
     const fileName = child.get_basename();
 
     if (encoding === 'buffer') {
@@ -45,31 +47,33 @@ function readdirSync(path, options = 'utf8') {
       const encodedName = Buffer.from(fileName).toString(encoding);
       list.push(encodedName);
     }
+
+    info = enumerator.next_file(null);
   }
 
   return list;
 }
 
-function readFileSync(path, options = {encoding: null, flag: 'r'}) {
+function readFileSync(path, options = { encoding: null, flag: 'r' }) {
   const file = Gio.File.new_for_path(path);
 
-  const [ok, data, etag] = file.load_contents(null);
+  const [ok, data] = file.load_contents(null);
 
   if (!ok) {
     // TODO: throw a better error
     throw new Error('failed to read file');
   }
 
-  const encoding = _getEncodingFromOptions(options, 'buffer');
+  const encoding = getEncodingFromOptions(options, 'buffer');
   if (encoding === 'buffer') {
     return Buffer.from(data);
-  } else {
-    return data.toString(encoding);
   }
+
+  return data.toString(encoding);
 }
 
 module.exports = {
   existsSync,
   readdirSync,
-  readFileSync
+  readFileSync,
 };
