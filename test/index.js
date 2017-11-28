@@ -5,14 +5,14 @@ function checkExistsSync() {
   const nonExistingFiles = ['asdasd', '/asdasd', ''];
 
   for (const file of existingFiles) {
-    const reuslt = MODULE.existsSync(file);
+    const result = MODULE.existsSync(file);
     if (result !== true) {
       throw new Error(`${file} exists but existsSync returned ${result}`);
     }
   }
 
   for (const file of nonExistingFiles) {
-    const reuslt = MODULE.existsSync(file);
+    const result = MODULE.existsSync(file);
     if (result !== false) {
       throw new Error(`${file} doesn't exists but existsSync returned ${result}`);
     }
@@ -54,5 +54,6 @@ if (!Object.keys(MODULE).length) {
   throw new Error('MODULE was not exported');
 }
 
+checkExistsSync();
 checkReaddirSync();
 checkReadFileSync();
